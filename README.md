@@ -27,3 +27,13 @@ php index.php --update --id 1 --description "breakfast" --amount 40
 ```
 php index.php --delete --id 3
 ```
+
+### View all expenses
+```
+php index.php --list
+```
+
+### View a summary of all expenses
+```
+php index.php --sumary
+```

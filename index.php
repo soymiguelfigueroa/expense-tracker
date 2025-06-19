@@ -260,6 +260,19 @@ class Expenses
         return $list;
     }
 
+    public function getSumary()
+    {
+        $data = $this->file->read();
+
+        $sumary = 0;
+
+        foreach ($data as $value) {
+            $sumary += $value['amount'];
+        }
+
+        return $sumary;
+    }
+
     private function getCurrentDate(): string
     {
         return date('Y-m-d H:i:s', strtotime('now'));
@@ -283,6 +296,7 @@ $longopts = [
     'update',
     'delete',
     'list',
+    'sumary',
     'id:',
     'description:',
     'amount:'
@@ -369,6 +383,14 @@ if (count($arguments) > 0) {
                 }
                 echo "$data\n";
             }
+            break;
+
+        case 'sumary':
+            $file = new JsonFile('expenses.json');
+            $expenses = new Expenses($file);
+            $sumary = $expenses->getSumary();
+            echo "Total expenses: $$sumary";
+            
             break;
         
         default:
