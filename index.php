@@ -179,6 +179,8 @@ class Expenses
                 return new Expense($value);
             }
         }
+
+        return false;
     }
 
     public function update(Expense $expense)
@@ -190,6 +192,20 @@ class Expenses
                 $value['description'] = $expense->getDescription();
                 $value['amount'] = $expense->getAmount();
                 $value['updatedAt'] = $this->getCurrentDate();
+            }
+        }
+
+        $this->file->save($data);
+    }
+
+    public function delete(Expense $expense)
+    {
+        $data = $this->file->read();
+
+        foreach ($data as $key => $value) {
+            if ($value['id'] == $expense->getId()) {
+                unset($data[$key]);
+                break;
             }
         }
 
@@ -217,6 +233,7 @@ $options = "";
 $longopts = [
     'add',
     'update',
+    'delete',
     'id:',
     'description:',
     'amount:'
@@ -272,6 +289,24 @@ if (count($arguments) > 0) {
                 }
             } else {
                 echo "Please enter your arguments in the appropriate format.\n";
+            }
+            break;
+
+        case 'delete':
+            $id = (int) $arguments['id'];
+            if ($id) {
+                $file = new JsonFile('expenses.json');
+                $expenses = new Expenses($file);
+                $expense = $expenses->getExpense($id);
+                if ($expense) {
+                    $expenses->delete($expense);
+
+                    echo "The expense has been deleted successfully\n";
+                } else {
+                    echo "The expense could not be found\n";
+                }
+            } else {
+                echo "Please enter the expense id.\n";
             }
             break;
         

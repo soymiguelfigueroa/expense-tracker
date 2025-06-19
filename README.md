@@ -13,12 +13,17 @@ You will need PHP (V8 or higher) to use this CLI app. I reccomend you XAMPP to u
 ## Usage
 The list of commands and their usage is given below:
 
-### Adding a new task
+### Adding a new exponse
 ```
 php index.php --add --description "Lunch" --amount 20
 ```
 
-### Updating a task
+### Updating a exponse
 ```
 php index.php --update --id 1 --description "breakfast" --amount 40
+```
+
+### Deleting a exponse
+```
+php index.php --delete --id 3
 ```
