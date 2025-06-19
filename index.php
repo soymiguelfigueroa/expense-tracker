@@ -78,10 +78,13 @@ class Expense
     private $createdAt;
     private $updatedAt;
 
-    public function __construct($description, $amount)
+    public function __construct(Array $values)
     {
-        $this->description = $description;
-        $this->amount = $amount;
+        $this->id = $values['id'] ?? null;
+        $this->description = $values['description'] ?? null;
+        $this->amount = $values['amount'] ?? null;
+        $this->createdAt = $values['createdAt'] ?? null;
+        $this->updatedAt = $values['updatedAt'] ?? null;
     }
 
     public function getId()
@@ -112,6 +115,16 @@ class Expense
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
     }
 
     public function setCreatedAt($createdAt)
@@ -155,6 +168,32 @@ class Expenses
         $this->file->save($data);
     }
 
+    public function getExpense($id)
+    {
+        $data = $this->file->read();
+
+        foreach ($data as $value) {
+            if ($value['id'] == $id) {
+                return new Expense($value);
+            }
+        }
+    }
+
+    public function update(Expense $expense)
+    {
+        $data = $this->file->read();
+
+        foreach ($data as &$value) {
+            if ($value['id'] == $expense->getId()) {
+                $value['description'] = $expense->getDescription();
+                $value['amount'] = $expense->getAmount();
+                $value['updatedAt'] = $this->getCurrentDate();
+            }
+        }
+
+        $this->file->save($data);
+    }
+
     private function getCurrentDate(): string
     {
         return date('Y-m-d H:i:s', strtotime('now'));
@@ -175,6 +214,8 @@ class Expenses
 $options = "";
 $longopts = [
     'add',
+    'update',
+    'id:',
     'description:',
     'amount:'
 ];
@@ -190,9 +231,43 @@ if (count($arguments) > 0) {
             $amount = (float) $arguments['amount'];
             if (is_string($description) && $amount > 0) {
                 $file = new JsonFile('expenses.json');
-                $expense = new Expense($description, $amount);
+                $expense = new Expense([
+                    'description' => $description, 
+                    'amount' => $amount
+                ]);
                 $expenses = new Expenses($file);
                 $expenses->add( $expense);
+
+                echo "The expense has been saved successfully!\n";
+            } else {
+                echo "Please enter your arguments in the appropriate format.\n";
+            }
+            break;
+
+        case 'update':
+            $id = (int) $arguments['id'];
+            $description = $arguments['description'] ?? null;
+            $amount = (float) $arguments['amount'] ?? null;
+            if ($id > 0 && (is_string($description) || $amount > 0)) {
+                $file = new JsonFile('expenses.json');
+                $expenses = new Expenses($file);
+                $expense = $expenses->getExpense($id);
+                $errors = [];
+                if ($description) {
+                    $expense->setDescription($description);
+                }
+                if ($amount > 0) {
+                    $expense->setAmount($amount);
+                }
+                if (count($errors) > 0) {
+                    foreach ($errors as $error) {
+                        echo $error;
+                    }
+                } else {
+                    $expenses->update($expense);
+                    
+                    echo "The expense has been updated successfully!\n";
+                }
             } else {
                 echo "Please enter your arguments in the appropriate format.\n";
             }

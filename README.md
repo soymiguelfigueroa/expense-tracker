@@ -17,3 +17,8 @@ The list of commands and their usage is given below:
 ```
 php index.php --add --description "Lunch" --amount 20
 ```
+
+### Updating a task
+```
+php index.php --update --id 1 --description "breakfast" --amount 40
+```
