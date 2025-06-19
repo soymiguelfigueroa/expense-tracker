@@ -166,6 +166,8 @@ class Expenses
         ];
 
         $this->file->save($data);
+
+        return $expense;
     }
 
     public function getExpense($id)
@@ -236,9 +238,9 @@ if (count($arguments) > 0) {
                     'amount' => $amount
                 ]);
                 $expenses = new Expenses($file);
-                $expenses->add( $expense);
+                $expense = $expenses->add( $expense);
 
-                echo "The expense has been saved successfully!\n";
+                echo "The expense has been saved successfully! (ID: {$expense->getId()})\n";
             } else {
                 echo "Please enter your arguments in the appropriate format.\n";
             }
