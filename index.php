@@ -212,6 +212,54 @@ class Expenses
         $this->file->save($data);
     }
 
+    public function getList()
+    {
+        $data = $this->file->read();
+
+        $list = [
+            'metadata' => [
+                'headers' => [
+                    'Id' => [
+                        'length' => strlen('Id'),
+                    ],
+                    'Description' => [
+                        'length' => strlen('Description'),
+                    ],
+                    'Amount' => [
+                        'length' => strlen('Amount'),
+                    ],
+                    'CreatedAt' => [
+                        'length' => strlen('CreatedAt'),
+                    ],
+                    'UpdatedAt' => [
+                        'length' => strlen('UpdatedAt'),
+                    ],
+                ]
+            ],
+            'data' => $data,
+        ];
+
+        foreach ($data as $key => $value) {
+            if (strlen($value['id']) > $list['metadata']['headers']['Id']['length']) {
+                $list['metadata']['headers']['Id']['length'] = strlen($value['id']);
+            }
+            if (strlen($value['description']) > $list['metadata']['headers']['Description']['length']) {
+                $list['metadata']['headers']['Description']['length'] = strlen($value['description']);
+            }
+            if (strlen($value['amount']) > $list['metadata']['headers']['Amount']['length']) {
+                $list['metadata']['headers']['Amount']['length'] = strlen($value['amount']);
+            }
+            if (strlen($value['createdAt']) > $list['metadata']['headers']['CreatedAt']['length']) {
+                $list['metadata']['headers']['CreatedAt']['length'] = strlen($value['createdAt']);
+            }
+            if (strlen($value['updatedAt']) > $list['metadata']['headers']['UpdatedAt']['length']) {
+                $list['metadata']['headers']['UpdatedAt']['length'] = strlen($value['updatedAt']);
+            }
+        }
+
+        return $list;
+    }
+
     private function getCurrentDate(): string
     {
         return date('Y-m-d H:i:s', strtotime('now'));
@@ -234,6 +282,7 @@ $longopts = [
     'add',
     'update',
     'delete',
+    'list',
     'id:',
     'description:',
     'amount:'
@@ -300,6 +349,25 @@ if (count($arguments) > 0) {
                 }
             } else {
                 echo "Please enter the expense id.\n";
+            }
+            break;
+
+        case 'list':
+            $file = new JsonFile('expenses.json');
+            $expenses = new Expenses($file);
+            $list = $expenses->getList();
+            $columns = array_keys($list['metadata']['headers']);
+            $header = '';
+            foreach ($columns as $column) {
+                $header .= str_pad($column, $list['metadata']['headers'][$column]['length'] + 2);
+            }
+            echo "$header\n";
+            foreach ($list['data'] as $row) {
+                $data = '';
+                foreach ($row as $columnKey => $column) {
+                    $data .= str_pad($column, $list['metadata']['headers'][ucfirst($columnKey)]['length'] + 2);
+                }
+                echo "$data\n";
             }
             break;
         
