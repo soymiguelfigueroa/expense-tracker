@@ -37,3 +37,8 @@ php index.php --list
 ```
 php index.php --sumary
 ```
+
+### View a summary of all expenses for a specific month
+```
+php index.php --sumary --month 6
+```
