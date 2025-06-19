@@ -260,14 +260,21 @@ class Expenses
         return $list;
     }
 
-    public function getSumary()
+    public function getSumary($month)
     {
         $data = $this->file->read();
 
         $sumary = 0;
 
         foreach ($data as $value) {
-            $sumary += $value['amount'];
+            if ($month) {
+                $monthOfValue = date(format: 'n', timestamp: strtotime($value['createdAt']));
+                if ($monthOfValue == $month) {
+                    $sumary += $value['amount'];
+                }
+            } else {
+                $sumary += $value['amount'];
+            }
         }
 
         return $sumary;
@@ -299,7 +306,8 @@ $longopts = [
     'sumary',
     'id:',
     'description:',
-    'amount:'
+    'amount:',
+    'month:',
 ];
 
 $arguments = getopt(short_options: $options, long_options: $longopts);
@@ -386,11 +394,22 @@ if (count($arguments) > 0) {
             break;
 
         case 'sumary':
+            $month = $arguments['month'] ?? null;
+            if ($month !== null) {
+                if ($month <= 0 || $month > 12) {
+                    echo "You need to enter a valid month\n";
+                    exit;
+                }
+            }
             $file = new JsonFile('expenses.json');
             $expenses = new Expenses($file);
-            $sumary = $expenses->getSumary();
-            echo "Total expenses: $$sumary";
-            
+            $sumary = $expenses->getSumary($month);
+            if ($month !== null) {
+                $monthName = date("F", mktime(0, 0, 0, $month, 10));
+                echo "Total expenses for $monthName: $$sumary";
+            } else {
+                echo "Total expenses: $$sumary";
+            }
             break;
         
         default:
