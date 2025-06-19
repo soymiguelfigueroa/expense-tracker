@@ -271,22 +271,15 @@ if (count($arguments) > 0) {
                 $file = new JsonFile('expenses.json');
                 $expenses = new Expenses($file);
                 $expense = $expenses->getExpense($id);
-                $errors = [];
                 if ($description) {
                     $expense->setDescription($description);
                 }
                 if ($amount > 0) {
                     $expense->setAmount($amount);
                 }
-                if (count($errors) > 0) {
-                    foreach ($errors as $error) {
-                        echo $error;
-                    }
-                } else {
-                    $expenses->update($expense);
+                $expenses->update($expense);
                     
-                    echo "The expense has been updated successfully!\n";
-                }
+                echo "The expense has been updated successfully!\n";
             } else {
                 echo "Please enter your arguments in the appropriate format.\n";
             }
