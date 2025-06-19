@@ -13,17 +13,17 @@ You will need PHP (V8 or higher) to use this CLI app. I reccomend you XAMPP to u
 ## Usage
 The list of commands and their usage is given below:
 
-### Adding a new exponse
+### Adding a new expense
 ```
 php index.php --add --description "Lunch" --amount 20
 ```
 
-### Updating a exponse
+### Updating a expense
 ```
 php index.php --update --id 1 --description "breakfast" --amount 40
 ```
 
-### Deleting a exponse
+### Deleting a expense
 ```
 php index.php --delete --id 3
 ```
